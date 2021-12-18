@@ -107,7 +107,7 @@ class BinaryStream {
       $f = fopen("php://temp", "rb+");
     }
     else {
-      $f = fopen(tempnam(sys_get_temp_dir(), "fnt"), "rb+");
+      $f = tmpfile();
     }
 
     return $f;
