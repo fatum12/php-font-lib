@@ -1,7 +1,7 @@
 <?php
 /**
  * @package php-font-lib
- * @link    https://github.com/PhenX/php-font-lib
+ * @link    https://github.com/dompdf/php-font-lib
  * @author  Fabien Ménager <fabien.menager@gmail.com>
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
@@ -125,6 +125,10 @@ class cmap extends Table {
           }
 
           for ($c = $c1; $c <= $c2; $c++) {
+            if ($c === 0xFFFF) {
+              continue;
+            }
+
             if ($ro == 0) {
               $gid = ($c + $d) & 0xFFFF;
             }
@@ -132,15 +136,17 @@ class cmap extends Table {
               $offset = ($c - $c1) * 2 + $ro;
               $offset = $ro_start + 2 * $i + $offset;
 
-              $font->seek($offset);
-              $gid = $font->readUInt16();
+              $gid = 0;
+              if ($font->seek($offset) === true) {
+                $gid = $font->readUInt16();
+              }
 
               if ($gid != 0) {
                 $gid = ($gid + $d) & 0xFFFF;
               }
             }
 
-            if ($gid > 0) {
+            if ($gid >= 0) {
               $glyphIndexArray[$c] = $gid;
             }
           }
@@ -282,7 +288,7 @@ class cmap extends Table {
 
       $subtable["length"] = $length - $length_before;
       $font->seek($before_subheader);
-      $length += $font->pack(self::$subtable_v4_format, $subtable);
+      $font->pack(self::$subtable_v4_format, $subtable);
 
       $font->seek($after_subtable);
     }

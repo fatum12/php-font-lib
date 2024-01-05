@@ -1,7 +1,7 @@
 <?php
 /**
  * @package php-font-lib
- * @link    https://github.com/PhenX/php-font-lib
+ * @link    https://github.com/dompdf/php-font-lib
  * @author  Fabien Ménager <fabien.menager@gmail.com>
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
@@ -217,13 +217,12 @@ class File extends BinaryStream {
 
   function encode($tags = array()) {
     if (!self::$raw) {
-      $tags = array_merge(array("head", "hhea", "cmap", "hmtx", "maxp", "glyf", "loca", "name", "post"), $tags);
+      $tags = array_merge(array("head", "hhea", "cmap", "hmtx", "maxp", "glyf", "loca", "name", "post", "cvt ", "fpgm", "prep"), $tags);
     }
     else {
       $tags = array_keys($this->directory);
     }
 
-    $num_tables = count($tags);
     $n          = 16; // @todo
 
     Font::d("Tables : " . implode(", ", $tags));
@@ -238,6 +237,8 @@ class File extends BinaryStream {
 
       $entries[$tag] = $this->directory[$tag];
     }
+
+    $num_tables = count($entries);
 
     $this->header->data["numTables"] = $num_tables;
     $this->header->encode();
